@@ -1,0 +1,131 @@
+
+
+/* Custom css */
+
+.top_bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 27px 0 27px 0;
+    background: #f9f9ff;
+}
+.top_bar h3 {
+    font-weight: 700;
+}
+
+.button_wrapper {
+    width: 100% !important;
+    height: 500px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.copy_right {
+    width: 100%;
+}
+.footer-copy-right {
+    text-align: center;
+}
+.footer-copy-right p {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.my_buttons {
+    text-align: center;
+    width: 30%;
+    /* height: 50%; */
+    padding: 80px 0 80px 0;
+    text-align: center;
+}
+
+.my_buttons a {
+    display: flex;
+    width: 70%;
+    margin: 20px auto 20px auto;
+}
+
+.reg_method {
+    width: 70%;
+    font-size: 16px !important;
+}
+
+.footer-border {
+    padding: 20px !important;
+}
+
+.form_wrapper {
+    width: 35%;
+    margin: auto;
+    padding: 20px;
+    margin: 40px auto 40px auto;
+}
+.register_btn {
+    color: #415094;
+    padding-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.drop_fields {
+    height: 50px;
+}
+
+.drop_values div {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Profile page */
+
+body {
+    background-color: #f8f9fa;
+}
+.profile-container {
+    max-width: 900px;
+    margin: 50px auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+.profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.profile-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+.btn-primary {
+    background-color: #1f2b7b;
+    border-color: #1f2b7b;
+}
+.btn-primary:hover {
+    background-color: #142071;
+    border-color: #142071;
+}
+.section-title {
+    color: #1f2b7b;
+    margin-bottom: 15px;
+}
+.bio-text {
+    font-style: italic;
+    color: #6c757d;
+}
+.skill-badge {
+    background-color: #1f2b7b;
+    color: white;
+    margin: 5px;
+}
+.eml {
+    word-wrap: break-word;
+    max-width: 200px;
+}
