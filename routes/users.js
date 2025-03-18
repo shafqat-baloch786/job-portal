@@ -1,7 +1,7 @@
 import express from "express";
 import { login, logout, recruiter_registration, update_profile, main_page, my_profile } from "../controllers/users.js";
 import is_authenticated from "../middlewares/is_authenticated.js";
-import single_upload from "../middlewares/mutler.js";
+import single_upload from "../middlewares/multer.js";
 
 const router = express.Router();
 
@@ -17,12 +17,12 @@ router.route("/recruiter-registration")
     .get(recruiter_registration);
 
 // Login
-router.route("/login").post(login);
+router.route("/login").get(login).post(login);
 
 // Logout
 router.route("/logout").get(logout);
 
 // Update profile
-router.route("/profile/update").post(is_authenticated, single_upload, update_profile);
+router.route("/profile/recruiter-edit").get(is_authenticated, update_profile).post(is_authenticated, single_upload, update_profile);
 
 export default router;

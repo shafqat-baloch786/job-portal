@@ -5,8 +5,8 @@
 .top_bar {
     width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     padding: 27px 0 27px 0;
     background: #f9f9ff;
 }

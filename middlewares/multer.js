@@ -27,6 +27,3 @@ export default single_upload;
 
 
 
-        // Profile images settings endind
-
-

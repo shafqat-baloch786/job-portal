@@ -25,25 +25,21 @@ export const main_page = async (request, response) => {
 export const recruiter_registration = async (request, response) => {
     try {
         const current_url = request.originalUrl;
-
         if (request.method === "GET") {
             return response.render('recruiter_registration', { current_url });
         } else {
             const { fullname, email, phone_number, password, bio, company, skills } = request.body;
-
             if (!fullname || !email || !phone_number || !password) {
                 return response.status(400).json({
                     message: "Required fields are missing.",
                     success: false
                 });
             }
-
             const file = request.file;
             let profile_photo = '';
             if (file) {
                 profile_photo = '/profile_images/' + file.filename;
             }
-
             const user = await User.findOne({ email });
             if (user) {
                 return response.status(400).json({
@@ -51,7 +47,6 @@ export const recruiter_registration = async (request, response) => {
                     success: false
                 });
             }
-
             const hashed_password = await bcrypt.hash(password, 10);
             const new_user = await User.create({
                 fullname,
@@ -66,12 +61,9 @@ export const recruiter_registration = async (request, response) => {
                     profile_photo
                 }
             });
-
             await new_user.save();
-
-            const payload = { email: new_user.email };
+            const payload = { email: new_user.email, user_id: new_user._id };
             const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
-
             return response.status(200)
                 .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' })
                 .redirect('/profile');
@@ -88,24 +80,25 @@ export const recruiter_registration = async (request, response) => {
 // Login
 export const login = async (request, response) => {
     try {
+        if(request.method === "GET") {
+            return response.render('login');
+        }
         const { email, password, role } = request.body;
-
         if (!email || !password || !role) {
             return response.status(400).json({
                 message: "Required fields are missing.",
                 success: false
             });
         }
-
-        let user = await User.findOne({ email });
-        if (!user) {
+        let current_user = await User.findOne({ email });
+        console.log(current_user);
+        if (!current_user) {
             return response.status(400).json({
                 message: "Incorrect email or password.",
                 success: false
             });
         }
-
-        const is_password_match = await bcrypt.compare(password, user.password);
+        const is_password_match = await bcrypt.compare(password, current_user.password);
         if (!is_password_match) {
             return response.status(400).json({
                 message: "Incorrect email or password.",
@@ -113,32 +106,24 @@ export const login = async (request, response) => {
             });
         }
 
-        if (role !== user.role) {
+        if (role !== current_user.role) {
             return response.status(400).json({
                 message: "Account does not exist with the selected role.",
                 success: false
             });
         }
-
-        const token_data = { user_id: user._id };
-        const token = jwt.sign(token_data, SECRET_KEY, { expiresIn: '1d' });
-
-        user = {
-            _id: user._id,
-            fullname: user.fullname,
-            email: user.email,
-            phone_number: user.phone_number,
-            role: user.role,
-            profile: user.profile
-        };
-
+    //    let  user = {
+    //         _id: current_user._id,
+    //         fullname: current_user.fullname,
+    //         email: current_user.email,
+    //         phone_number: current_user.phone_number,
+    //         role: current_user.role,
+    //         profile: current_user.profile
+    //     };
+    const payload = { email: current_user.email, user_id: current_user._id };
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
         return response.status(200)
-            .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' })
-            .json({
-                message: `Welcome back, ${user.fullname}`,
-                user,
-                success: true
-            });
+            .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).redirect('/profile');
     } catch (error) {
         console.log(error);
         return response.status(500).json({
@@ -151,12 +136,13 @@ export const login = async (request, response) => {
 // Logout
 export const logout = async (request, response) => {
     try {
-        return response.status(200)
-            .cookie("token", "", { maxAge: 0 })
-            .json({
-                message: "Logged out successfully.",
-                success: true
-            });
+        // return response.status(200)
+        //     .cookie("token", "", { maxAge: 0 })
+        //     .json({
+        //         message: "Logged out successfully.",
+        //         success: true
+        //     });
+        return response.status(200).cookie("token", "", {maxAge: 0}).redirect('/');
     } catch (error) {
         console.log(error);
         return response.status(500).json({
@@ -169,7 +155,26 @@ export const logout = async (request, response) => {
 // Updating profile
 export const update_profile = async (request, response) => {
     try {
-        const { fullname, email, phone_number, bio, skills } = request.body;
+        const current_url = request.originalUrl;
+        const token = request.cookies.token;
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const user_id = decoded.user_id;
+        console.log("User id: ", user_id);
+        console.log("User email: ", request.email);
+        let user = await User.findByIdAndUpdate(user_id);
+        console.log("User", user);
+        let user_is;
+        if(request.method === "GET") {
+            response.render('recruiter_edit', {
+                user,
+                user_is,
+                current_url,
+            });
+        }
+         else {
+
+
+        const { fullname, email, phone_number, bio, skills, company } = request.body;
         const file = request.file;
 
         if (!file) {
@@ -179,16 +184,16 @@ export const update_profile = async (request, response) => {
             });
         }
 
-        const file_uri = getDataUri(file);
-        const cloud_response = await cloudinary.uploader.upload(file_uri.content);
+        // const file = request.file;
+        let profile_photo = '';
+        if (file) {
+            profile_photo = '/profile_images/' + file.filename;
+        }
 
         let skills_array;
         if (skills) {
             skills_array = skills.split(",");
         }
-
-        const user_id = request.id;
-        let user = await User.findById(user_id);
 
         if (!user) {
             return response.status(404).json({
@@ -202,27 +207,25 @@ export const update_profile = async (request, response) => {
         if (phone_number) user.phone_number = phone_number;
         if (bio) user.profile.bio = bio;
         if (skills) user.profile.skills = skills_array;
-        if (cloud_response) {
-            user.profile.resume = cloud_response.secure_url;
-            user.profile.resume_original_name = file.originalname;
-        }
+        if(company) user.profile.company = company;
+        // if (cloud_response) {
+        //     user.profile.resume = cloud_response.secure_url;
+        //     user.profile.resume_original_name = file.originalname;
+        // }
 
         await user.save();
 
-        user = {
-            _id: user._id,
-            fullname: user.fullname,
-            email: user.email,
-            phone_number: user.phone_number,
-            role: user.role,
-            profile: user.profile
-        };
+        // user = {
+        //     _id: user._id,
+        //     fullname: user.fullname,
+        //     email: user.email,
+        //     phone_number: user.phone_number,
+        //     role: user.role,
+        //     profile: user.profile
+        // };
 
-        return response.status(200).json({
-            message: "Profile updated successfully.",
-            user,
-            success: true
-        });
+        return response.status(200).redirect('/profile');
+    }
     } catch (error) {
         console.log(error);
         return response.status(500).json({
@@ -235,6 +238,10 @@ export const update_profile = async (request, response) => {
 // My profile
 export const my_profile = async (request, response) => {
     try {
+        const token = request.cookies.token;
+        console.log("Token", token);
+        const decoded = jwt.verify(token, SECRET_KEY);
+        console.log("Email", decoded.email);
         const my_email = request.email;
         const current_user = await User.findOne({ email: my_email });
         const jobs = await Job.find({ user_id: current_user._id });
