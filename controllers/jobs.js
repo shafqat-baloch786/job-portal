@@ -42,7 +42,7 @@ export const post_job = async (req, res) => {
             user_id: current_user._id,
         });
         job.save();
-        return res.status(201).redirect('/jobs');
+        return res.status(201).redirect('/profile');
        
     }
     } catch (error) {
@@ -109,5 +109,39 @@ export const get_admin_jobs = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+    }
+}
+
+
+// Edit job
+
+export const edit_job = async (request, response) => {
+    try {
+        const job_id = request.params.id;
+        const current_url = request.orignalUrl;
+        const existing_data =  await Job.findByIdAndUpdate(job_id);
+        console.log("Job: ", existing_data);
+        console.log("Job ID: ", job_id);
+        if(request.method === "GET") {
+            response.render('edit_job', {
+                current_url,
+                existing_data,
+            });
+        } else {
+            const updated_data = await request.body;
+            existing_data.title = updated_data.title,
+            existing_data.description = updated_data.description,
+            existing_data.salary = updated_data.salary,
+            existing_data.experience_level = updated_data.experience,
+            existing_data.location = updated_data.location,
+            existing_data.job_type = updated_data.jobType,
+            existing_data.position = updated_data.position,
+            // existing_data.company = updated_data.company
+
+            await existing_data.save();
+            response.status(200).redirect('/profile');
+        }
+    } catch(error) {
+        console.log("Error on edit page!", error);
     }
 }
