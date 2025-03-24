@@ -77,6 +77,62 @@ export const recruiter_registration = async (request, response) => {
     }
 };
 
+// Applicant registration
+export const applicant_registration = async (request, response) => {
+    try {
+        const current_url = request.originalUrl;
+        if (request.method === "GET") {
+            return response.render('applicant_registration', { current_url });
+        } else {
+            const { fullname, email, phone_number, password, bio, skills } = request.body;
+            if (!fullname || !email || !phone_number || !password) {
+                return response.status(400).json({
+                    message: "Required fields are missing.",
+                    success: false
+                });
+            }
+            const file = request.file;
+            let profile_photo = '';
+            if (file) {
+                profile_photo = '/profile_images/' + file.filename;
+            }
+            const user = await User.findOne({ email });
+            if (user) {
+                return response.status(400).json({
+                    message: "User already exists with this email.",
+                    success: false
+                });
+            }
+            const hashed_password = await bcrypt.hash(password, 10);
+            const new_user = await User.create({
+                fullname,
+                email,
+                phone_number,
+                password: hashed_password,
+                role: 'applicant',
+                profile: {
+                    bio,
+                    skills,
+                    profile_photo
+                }
+            });
+            await new_user.save();
+            const payload = { email: new_user.email, user_id: new_user._id };
+            const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
+            return response.status(200)
+                .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' })
+                .redirect('/profile');
+        }
+    } catch (error) {
+        console.log(error);
+        return response.status(500).json({
+            message: "An error occurred during registration.",
+            success: false
+        });
+    }
+};
+
+
 // Login
 export const login = async (request, response) => {
     try {
@@ -244,6 +300,7 @@ export const my_profile = async (request, response) => {
         console.log("Email", decoded.email);
         const my_email = request.email;
         const current_user = await User.findOne({ email: my_email });
+        const role = current_user.role;
         const jobs = await Job.find({ user_id: current_user._id });
 
         const current_user_data = {
@@ -251,7 +308,8 @@ export const my_profile = async (request, response) => {
             email: current_user.email,
             phone: current_user.phone_number,
             profile: current_user.profile,
-            company: current_user.company
+            company: current_user.company,
+            role,
         };
 
         response.render('my_profile', { current_user_data, jobs });

@@ -120,54 +120,48 @@
             </div>
         </div>
 
-
-
-
         <div class="row mt-4">
             <div class="col-md-6">
                 <a href="/profile/recruiter-edit" class="btn btn-primary btn-block">Edit Profile</a>
             </div>
-            <div class="col-md-6">
-                <a href="/post" class="btn btn-outline-primary btn-block">Post a job</a>
-            </div>
+            <% if (current_user_data.role !== 'applicant') { %>
+                <div class="col-md-6">
+                    <a href="/post" class="btn btn-outline-primary btn-block">Post a job</a>
+                </div>
+            <% } %>
         </div>
-                <!-- Test -->
-
-                <div class="row mt-4">
-                    <h5 class="section-title" style="font-weight: 800; width: 100%; margin: 20px; padding-bottom: 20px; text-align: center; text-transform: capitalize;">Jobs posted by you</h5>
-                    <% if (jobs && jobs.length > 0) { %>
-                        <% jobs.forEach(job => { %>
-                            <div class="col-md-4 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><%= job.title %></h5>
-                                        <h6 class="card-subtitle mb-2 text-muted"><%= job.company %></h6>
-                                        <p class="card-text">
-                                            <strong>Location:</strong> <%= job.location %> <br>
-                                            <strong>Experience:</strong> <%= job.experienceLevel %> <br>
-                                            <strong>Salary:</strong> $<%= job.salary %>
-                                        </p>
-                                        <div class="d-flex justify-content-between">
-                                            <button class="btn btn-primary" onclick="window.location.href='/edit-job/<%= job._id %>'">Edit</button>
-                                            <button class="btn btn-danger" onclick="delete_item('Job', '<%= job._id %>')">Delete</button>
-                                            <!-- <button class="btn btn-danger" onclick="window.location.href='/view-job/<%= job._id %>'">View</button> -->
-                                        </div>
+                
+        <% if (current_user_data.role !== 'applicant') { %>
+            <div class="row mt-4">
+                <h5 class="section-title" style="font-weight: 800; width: 100%; margin: 20px; padding-bottom: 20px; text-align: center; text-transform: capitalize;">Jobs posted by you</h5>
+                <% if (jobs && jobs.length > 0) { %>
+                    <% jobs.forEach(job => { %>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= job.title %></h5>
+                                    <h6 class="card-subtitle mb-2 text-muted"><%= job.company %></h6>
+                                    <p class="card-text">
+                                        <strong>Location:</strong> <%= job.location %> <br>
+                                        <strong>Experience:</strong> <%= job.experienceLevel %> <br>
+                                        <strong>Salary:</strong> $<%= job.salary %>
+                                    </p>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-primary" onclick="window.location.href='/edit-job/<%= job._id %>'">Edit</button>
+                                        <button class="btn btn-danger" onclick="delete_item('Job', '<%= job._id %>')">Delete</button>
+                                        <!-- <button class="btn btn-danger" onclick="window.location.href='/view-job/<%= job._id %>'">View</button> -->
                                     </div>
                                 </div>
                             </div>
-                        <% }) %>
-                    <% } else { %>
-                        <div class="col-md-12">
-                            <p>No jobs found.</p>
                         </div>
-                    <% } %>
-                </div>
-                
-                
-        
-        
-                <!-- Test end -->
-
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-md-12">
+                        <p>No jobs found.</p>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
 
     </div>
 </div>
