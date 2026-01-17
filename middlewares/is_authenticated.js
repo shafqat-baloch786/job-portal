@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-// const jsonwebtoken = require('jsonwebtoken');
 const SECRET_KEY = '89743229';
 
 const isAuthenticated = async (req, res, next) => {
@@ -19,7 +18,7 @@ const isAuthenticated = async (req, res, next) => {
                 success:false
             })
         };
-        // req.id = decode.userId;
+
         req.email = await decode.email;
         console.log("Emmm", req.email);
         next();
