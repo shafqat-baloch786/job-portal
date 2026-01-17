@@ -168,14 +168,7 @@ export const login = async (request, response) => {
                 success: false
             });
         }
-    //    let  user = {
-    //         _id: current_user._id,
-    //         fullname: current_user.fullname,
-    //         email: current_user.email,
-    //         phone_number: current_user.phone_number,
-    //         role: current_user.role,
-    //         profile: current_user.profile
-    //     };
+
     const payload = { email: current_user.email, user_id: current_user._id };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
         return response.status(200)
@@ -192,12 +185,6 @@ export const login = async (request, response) => {
 // Logout
 export const logout = async (request, response) => {
     try {
-        // return response.status(200)
-        //     .cookie("token", "", { maxAge: 0 })
-        //     .json({
-        //         message: "Logged out successfully.",
-        //         success: true
-        //     });
         return response.status(200).cookie("token", "", {maxAge: 0}).redirect('/');
     } catch (error) {
         console.log(error);
@@ -264,22 +251,7 @@ export const update_profile = async (request, response) => {
         if (bio) user.profile.bio = bio;
         if (skills) user.profile.skills = skills_array;
         if(company) user.profile.company = company;
-        // if (cloud_response) {
-        //     user.profile.resume = cloud_response.secure_url;
-        //     user.profile.resume_original_name = file.originalname;
-        // }
-
         await user.save();
-
-        // user = {
-        //     _id: user._id,
-        //     fullname: user.fullname,
-        //     email: user.email,
-        //     phone_number: user.phone_number,
-        //     role: user.role,
-        //     profile: user.profile
-        // };
-
         return response.status(200).redirect('/profile');
     }
     } catch (error) {
