@@ -1,7 +1,5 @@
 import { Job } from "../models/jobs.js";
-// import cookies from 'js-cookie';
 import { User } from "../models/users.js";
-// const cookies = require('js-cookie');
 
 export const post_job = async (req, res) => {
     try {
@@ -13,9 +11,6 @@ export const post_job = async (req, res) => {
         console.log(title, description, salary, location, jobType, experience, position);
         const userId = req.id;
         const current_cookie = req.cookies.token;
-    
-        // console.log("Payload", current_cookie.payload);
-        // console.log("Cookie", current_cookie);
         const email = await req.email;
         
         const current_user = await User.findOne({email});
@@ -23,12 +18,7 @@ export const post_job = async (req, res) => {
         const user_name = current_user.fullname;
 
         console.log("User_name", user_name);
-        // if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position) {
-        //     return res.status(400).json({
-        //         message: "Something is missing.",
-        //         success: false
-        //     });
-        // };
+   
         const job = await Job.create({
             title,
             description,
@@ -54,14 +44,10 @@ export const post_job = async (req, res) => {
 export const get_all_jobs = async (req, res) => {
     try {
 
-        // My code
         const all_jobs = await Job.find();
-        // console.log(all_jobs.title);
         if(req.method === "GET") {
             res.render('jobs', {title: 'Jobs', all_jobs});
         }
-
-        // My code ending
 
     } catch (error) {
         console.log("Error in jobs page", error);
