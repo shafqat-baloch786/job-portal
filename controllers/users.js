@@ -137,36 +137,24 @@ export const applicant_registration = async (request, response) => {
 export const login = async (request, response) => {
     try {
         if(request.method === "GET") {
-            return response.render('login');
+            return response.render('login', { error: null });
         }
         const { email, password, role } = request.body;
         if (!email || !password || !role) {
-            return response.status(400).json({
-                message: "Required fields are missing.",
-                success: false
-            });
+            return response.render('login', { error: "Required fields are missing." });
         }
         let current_user = await User.findOne({ email });
         console.log(current_user);
         if (!current_user) {
-            return response.status(400).json({
-                message: "Incorrect email or password.",
-                success: false
-            });
+            return response.render('login', { error: "Incorrect email or password." });
         }
         const is_password_match = await bcrypt.compare(password, current_user.password);
         if (!is_password_match) {
-            return response.status(400).json({
-                message: "Incorrect email or password.",
-                success: false
-            });
+            return response.render('login', { error: "Incorrect email or password." });
         }
 
         if (role !== current_user.role) {
-            return response.status(400).json({
-                message: "Account does not exist with the selected role.",
-                success: false
-            });
+            return response.render('login', { error: "Account does not exist with the selected role." });
         }
 
     const payload = { email: current_user.email, user_id: current_user._id };
@@ -175,10 +163,7 @@ export const login = async (request, response) => {
             .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).redirect('/profile');
     } catch (error) {
         console.log(error);
-        return response.status(500).json({
-            message: "An error occurred during login.",
-            success: false
-        });
+        return response.render('login', { error: "An error occurred during login." });
     }
 };
 
