@@ -3,8 +3,6 @@ import { User } from "../models/users.js";
 import { Job } from "../models/jobs.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import getDataUri from "../utils/datauri.js";
-import cloudinary from "../utils/cloudinary.js";
 
 const SECRET_KEY = '89743229';
 
