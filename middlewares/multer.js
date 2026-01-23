@@ -1,6 +1,3 @@
-
-
-
 // Profile images setting
 
 import multer from "multer";
