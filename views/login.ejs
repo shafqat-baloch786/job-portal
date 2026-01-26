@@ -37,6 +37,11 @@
         <div class="form_wrapper shadow">
             <div class="my_form">
                 <h3 class="register_btn">Login</h3>
+                <% if (error) { %>
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
                 <form action="/login" method="POST">
                     <!-- Role Dropdown -->
                     <div class="mt-10">

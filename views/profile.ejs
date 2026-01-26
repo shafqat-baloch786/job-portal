@@ -75,30 +75,30 @@
 <div class="container">
     <div class="profile-container">
         <div class="profile-header">
-            <img src="<%= current_user_data.profile.profile_photo %>" alt="Profile Photo" class="profile-photo">
-            <h2> Welcome, <span class="current_name" style="font-weight: 700; color: #1f2b7b;"> <%= current_user_data.name %> </span>   </h2>
-            <p class="bio-text"> <%= current_user_data.profile.bio %> </p>
+            <img src="<%= data.profile.profile_photo %>" alt="Profile Photo" class="profile-photo">
+            <h2> Welcome, <span class="current_name" style="font-weight: 700; color: #1f2b7b;"> <%= data.name %> </span>   </h2>
+            <p class="bio-text"> <%= data.profile.bio %> </p>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <h5 class="section-title">Email</h5>
-                <p class="eml"><%= current_user_data.email %></p>
+                <p class="eml"><%= data.email %></p>
             </div>
             <div class="col-md-6">
                 <h5 class="section-title">Contact Number</h5>
-                <p><%= current_user_data.phone %></p>
+                <p><%= data.phone %></p>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <h5 class="section-title">Contact Number</h5>
-                <p><%= current_user_data.phone %></p>
+                <p><%= data.phone %></p>
             </div>
             <div class="col-md-6">
                 <h5 class="section-title">Company</h5>
-                <p><%= current_user_data.profile.company || 'No company information available' %></p>
+                <p><%= data.profile.company || 'No company information available' %></p>
             </div>
         </div>
 
@@ -106,9 +106,9 @@
             <div class="col-md-12">
                 <h5 class="section-title">Skills</h5>
                 <div class="d-flex flex-wrap">
-                    <% 
-                    const skills = String(current_user_data.profile.skills || "");
-                    if (skills) { 
+                    <%
+                    const skills = String(data.profile.skills || "");
+                    if (skills) {
                 %>
                     <% skills.split(",").forEach(skill => { %>
                         <span class="badge bg-primary m-1 p-2 text-white" style="background: black !important;"><%= skill.trim() %></span>
@@ -124,18 +124,18 @@
             <div class="col-md-6">
                 <a href="/profile/recruiter-edit" class="btn btn-primary btn-block">Edit Profile</a>
             </div>
-            <% if (current_user_data.role !== 'applicant') { %>
+            <% if (data.role !== 'applicant') { %>
                 <div class="col-md-6">
                     <a href="/post" class="btn btn-outline-primary btn-block">Post a job</a>
                 </div>
             <% } %>
         </div>
-                
-        <% if (current_user_data.role !== 'applicant') { %>
+
+        <% if (data.role !== 'applicant') { %>
             <div class="row mt-4">
                 <h5 class="section-title" style="font-weight: 800; width: 100%; margin: 20px; padding-bottom: 20px; text-align: center; text-transform: capitalize;">Jobs posted by you</h5>
-                <% if (jobs && jobs.length > 0) { %>
-                    <% jobs.forEach(job => { %>
+                <% if (data.jobs && data.jobs.length > 0) { %>
+                    <% data.jobs.forEach(job => { %>
                         <div class="col-md-4 mb-3">
                             <div class="card">
                                 <div class="card-body">
