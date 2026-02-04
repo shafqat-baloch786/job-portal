@@ -2,7 +2,7 @@ import express from "express";
 import cookie_parser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import connect_db from "./utils/db.js";
+// import connect_db from "./utils/db.js";
 import user_route from "./routes/users.js";
 import company_route from "./routes/company.js";
 import job_route from "./routes/jobs.js";
@@ -13,14 +13,19 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 // import {ejs} from 'ejs';
 import ejs from "ejs";
+import session from "express-session"; 
+import flash from "connect-flash";
 
+// import ejs-mate from "ejs-mate";
+import ejsMate from "ejs-mate";
 
 // Define __dirname manually
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Configure dotenv
-dotenv.config({});
+dotenv.config();
+import connect_db from "./utils/db.js";
 
 // Initialize Express app
 const app = express();
@@ -41,12 +46,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookie_parser());
 
+// Use ejs-mate for EJS layouts
+app.engine('ejs', ejsMate);
+
 // CORS configuration
 const cors_options = {
     origin: "http://localhost:5173",
     credentials: true
 };
 app.use(cors(cors_options));
+
+// Session and flash middleware
+app.use(session({
+    secret: 'your_secret',
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    next();
+});
+
 
 // Define port
 const PORT = 8000;
@@ -60,6 +84,11 @@ app.use("/api/v1/user", user_route);
 app.use("/api/v1/company", company_route);
 app.use("/api/v1/job", job_route);
 app.use("/api/v1/application", application_route);
+
+// 404 handler
+app.use(/.*/, (req, res) => {
+    res.status(404).send("Page Not Found");
+});
 
 // Start the server
 app.listen(PORT, () => {

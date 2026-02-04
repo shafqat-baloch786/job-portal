@@ -193,7 +193,7 @@ export const logout = async (request, response) => {
     }
 };
 
-// Updating profile
+// Updating profile - recruiter
 export const update_profile = async (request, response) => {
     try {
         const current_url = request.originalUrl;
@@ -261,6 +261,71 @@ export const update_profile = async (request, response) => {
     }
 };
 
+// Updating profile - applicant
+// (The same function 'update_profile' handles both recruiter and applicant profile updates based on the route used)
+// Updating profile
+export const update_profile_applicant = async (request, response) => {
+    try {
+        const current_url = request.originalUrl;
+        const token = request.cookies.token;
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const user_id = decoded.user_id;
+        console.log("User id: ", user_id);
+        console.log("User email: ", request.email);
+        let user = await User.findByIdAndUpdate(user_id);
+        console.log("User", user);
+        let user_is;
+        if(request.method === "GET") {
+            response.render('applicant-edit', {
+                user,
+                user_is,
+                current_url,
+            });
+        }
+         else {
+
+
+        const { fullname, email, phone_number, bio, skills, company } = request.body;
+        const file = request.file;
+
+        
+
+        // const file = request.file;
+        let profile_photo = '';
+        if (file) {
+            profile_photo = '/profile_images/' + file.filename;
+        }
+
+        let skills_array;
+        if (skills) {
+            skills_array = skills.split(",");
+        }
+
+        if (!user) {
+            return response.status(404).json({
+                message: "User not found.",
+                success: false
+            });
+        }
+
+        if (fullname) user.fullname = fullname;
+        if (email) user.email = email;
+        if (phone_number) user.phone_number = phone_number;
+        if (bio) user.profile.bio = bio;
+        if (skills) user.profile.skills = skills_array;
+        if(company) user.profile.company = company;
+        await user.save();
+        return response.status(200).redirect('/profile');
+    }
+    } catch (error) {
+        console.log(error);
+        return response.status(500).json({
+            message: "An error occurred while updating the profile.",
+            success: false
+        });
+    }
+};
+
 // My profile
 export const my_profile = async (request, response) => {
     try {
@@ -281,8 +346,11 @@ export const my_profile = async (request, response) => {
             company: current_user.company,
             role,
         };
-
+        if(current_user.role === 'recruiter') {
         response.render('my_profile', { current_user_data, jobs });
+        } else {
+        response.render('profile', { user: current_user_data });
+        }
     } catch (error) {
         console.log("An error occurred in the profile page:", error);
         return response.status(500).json({

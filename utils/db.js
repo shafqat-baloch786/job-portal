@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 // Loading environment variables from utils/.env
-dotenv.config({ path: "./utils/.env" });
+dotenv.config();
 
 console.log("Connection String:", process.env.CONNECTION_STRING);
-
+mongoose.set('strictQuery', true);
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.CONNECTION_STRING, {
