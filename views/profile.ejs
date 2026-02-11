@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+
+
+<div class="container">
+    <div class="profile-container">
+        <div class="profile-header">
+        
+            <h2> <span class="current_name" style="font-weight: 700; color: #1f2b7b;"> Profile Page </span>   </h2>
+            
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="section-title">Name</h5>
+                <p class="eml"><%= user.name %></p>
+            </div>
+
+           <div class="col-md-6">
+                <h5 class="section-title">Email</h5>
+                <p class="eml"><%= user.email %></p>
+            </div>
+
+        <div class="row mt-4">
+            <div>
+                <a href="/profile/applicant-edit" class="btn btn-primary btn-block">Edit Profile</a>
+            </div>
+
+        </div>
